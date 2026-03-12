@@ -9,3 +9,6 @@
 
 controllers:
     resource: routing.controllers
+auth:
+    path: /authentication_token
+    methods: ["POST"]
