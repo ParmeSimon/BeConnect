@@ -1,9 +1,6 @@
 import { DefaultSession, NextAuthOptions, Session, User } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { JWT } from 'next-auth/jwt'
-import AppleProvider from 'next-auth/providers/apple'
-import GoogleProvider from 'next-auth/providers/google'
-import FacebookProvider from 'next-auth/providers/facebook'
 
 export interface ApiUser {
   id?: string
@@ -34,7 +31,7 @@ declare module 'next-auth/jwt' {
 }
 
 export const authenticate = async (
-  username: string,
+  email: string,
   password: string
 ): Promise<{ user: ApiUser; token: string; refresh_token: string }> => {
   return await fetch(
@@ -42,7 +39,7 @@ export const authenticate = async (
     {
       method: 'POST',
       body: JSON.stringify({
-        username: username,
+        email: email,
         password: password
       }),
       headers: {
@@ -103,31 +100,35 @@ export const refreshToken = async (
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: 'ARCA',
+      name: 'BeConnect',
       credentials: {
-        username: { label: 'Email', type: 'text' },
+        email: { label: 'Email', type: 'text' },
         password: { label: 'Mot de passe', type: 'password' }
       },
-      async authorize(
-        credentials: Record<string, string> | undefined
-      ): Promise<User | null> {
-        if (credentials?.username && credentials?.password) {
-          const response = await authenticate(
-            credentials?.username,
-            credentials?.password
-          )
-
-          if (response.token) {
+      async authorize(credentials): Promise<User | null> {
+        
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+      
+        try {
+          const response = await authenticate(credentials.email, credentials.password);
+      
+          if (response && response.token) {
             return {
-              ...response.user,
-              id: response.user.email!,
+              id: response.user?.email || credentials.email || 'user',
+              email: response.user?.email || credentials.email || '',
+              firstName: response.user?.firstName || '',
+              lastName: response.user?.lastName || '',
+              roles: response.user?.roles || [],
               token: response.token,
               refresh_token: response.refresh_token
             }
           }
+          return null;
+        } catch (error) {
+          return null;
         }
-
-        return null
       }
     })
   ],
@@ -145,7 +146,6 @@ export const authOptions: NextAuthOptions = {
         params.token.roles = params.user.roles
         params.token.token = params.user.token
         params.token.refresh_token = params.user.refresh_token
-        params.token.exp = null
       }
 
       if (params.trigger == 'update' && params.session) {
@@ -168,5 +168,5 @@ export const authOptions: NextAuthOptions = {
       return params.session
     }
   },
-  pages: { signIn: '/auth/signin', error: '/auth/signin' }
+  pages: { signIn: '/auth/login', error: '/auth/login' }
 }
