@@ -1,7 +1,14 @@
 import theme from "@/theme";
 import { Button, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
 
-export default function ButtonHeader({ label }: { label: string }) {
+interface ButtonHeaderProps {
+    label: string;
+    link: string;
+}
+
+export default function ButtonHeader({ label, link }: ButtonHeaderProps) {
+    const router = useRouter();
     return (
         <Button sx={{
             backgroundColor: theme.palette.background.white,
@@ -23,7 +30,13 @@ export default function ButtonHeader({ label }: { label: string }) {
                 color: theme.palette.background.white,
                 border: `2px solid ${theme.palette.background.purple}`,
             },
-        }}>
+        }}
+        onClick={() => {
+            if (link) {
+                router.push(link);
+            }
+        }}
+        >
             <Typography>{label}</Typography>
         </Button>
     )

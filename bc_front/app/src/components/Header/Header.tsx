@@ -14,9 +14,9 @@ const Header = () => {
   const { data: session } = useSession()
   const router = useRouter()
 
-  const isAdmin = ["Dashboard", "Offres", "Étudiants", "Alumnis", "Entreprises"]
-  const isStudent = ["Profil", "Offres", "Étudiants", "Ancien étudiants", "Entreprises", "Suivi"]
-  const isCompany = ["Profil", "Offres", "Étudiants", "Candidatures"]
+  const isAdmin = [{label: "Dashboard", link: "/admin/dashboard"}, {label: "Offres", link: "/admin/offers"}, {label: "Étudiants", link: "/admin/students"}, {label: "Alumnis", link: "/admin/alumnis"}, {label: "Entreprises", link: "/admin/companies"}]
+  const isStudent = [{label: "Profil", link: "/student/profile"}, {label: "Offres", link: "/student/offers"}, {label: "Étudiants", link: "/student/students"}, {label: "Ancien étudiants", link: "/student/alumnis"}, {label: "Entreprises", link: "/student/companies"}, {label: "Suivi", link: "/student/tracking"}]
+  const isCompany = [{label: "Profil", link: "/company/profile"}, {label: "Offres", link: "/company/offers"}, {label: "Étudiants", link: "/company/students"}, {label: "Candidatures", link: "/company/applications"}]
 
   const isRole = session?.user?.roles[0]
 
@@ -41,7 +41,7 @@ const Header = () => {
         <Image src="/logoBig.png" alt="logo" width={100} height={100} style={{ width: '100%', height: '100%' }} />
       </Box>
       <Box sx={{ display: 'flex', gap: '10px' }}>
-        {isRole === "ROLE_ADMIN" ? isAdmin.map((item) => <ButtonHeader key={item} label={item} />) : isRole === "ROLE_USER" ? isStudent.map((item) => <ButtonHeader key={item} label={item} />) : isRole === "ROLE_COMPANY" ? isCompany.map((item) => <ButtonHeader key={item} label={item} />) : <></>}
+        {isRole === "ROLE_ADMIN" ? isAdmin.map((item) => <ButtonHeader label={item.label} link={item.link} />) : isRole === "ROLE_USER" ? isStudent.map((item) => <ButtonHeader label={item.label} link={item.link} />) : isRole === "ROLE_COMPANY" ? isCompany.map((item) => <ButtonHeader label={item.label} link={item.link} />) : <></>}
       </Box>
       <Box>
         <IconButton>

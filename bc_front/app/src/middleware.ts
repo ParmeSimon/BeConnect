@@ -11,13 +11,13 @@ export default withAuth(
     if ((path === '/' || path === '/auth/login') && token) {
       const roles = token.roles || [];
       if (roles.includes('ROLE_ADMIN')) {
-        return NextResponse.redirect(new URL('/admin/', req.url));
+        return NextResponse.redirect(new URL('/admin/dashboard/', req.url));
       }
       if (roles.includes('ROLE_COMPANY')) {
-        return NextResponse.redirect(new URL('/company/', req.url));
+        return NextResponse.redirect(new URL('/company/profile', req.url));
       }
       if (roles.includes('ROLE_USER')) {
-        return NextResponse.redirect(new URL('/student/', req.url));
+        return NextResponse.redirect(new URL('/student/profile', req.url));
       }
 
       // Optionnel : redirection par défaut si aucun rôle ne correspond
