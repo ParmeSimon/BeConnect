@@ -5,7 +5,7 @@ import { NextAuthProvider } from '@/providers/NextAuthProvider'
 import CssBaseline from '@mui/material/CssBaseline'
 import { SWRProvider } from '@/providers/SwrProvider'
 import { Box } from '@mui/material'
-import Header from '@/components/Header'
+import Header from '@/components/Header/Header'
 import { NotificationProvider } from '@/providers/NotificationProvider'
 export default function RootLayout({
   children

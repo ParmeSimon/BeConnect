@@ -97,6 +97,12 @@ export const refreshToken = async (
   })
 }
 
+function decodeJwtPayload(token: string): Record<string, any> {
+  const base64Payload = token.split('.')[1]
+  const payload = Buffer.from(base64Payload, 'base64').toString('utf-8')
+  return JSON.parse(payload)
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -115,12 +121,13 @@ export const authOptions: NextAuthOptions = {
           const response = await authenticate(credentials.email, credentials.password);
       
           if (response && response.token) {
+            const jwtPayload = decodeJwtPayload(response.token)
             return {
-              id: response.user?.email || credentials.email || 'user',
-              email: response.user?.email || credentials.email || '',
+              id: jwtPayload.username || credentials.email || 'user',
+              email: jwtPayload.username || credentials.email || '',
               firstName: response.user?.firstName || '',
               lastName: response.user?.lastName || '',
-              roles: response.user?.roles || [],
+              roles: jwtPayload.roles || [],
               token: response.token,
               refresh_token: response.refresh_token
             }

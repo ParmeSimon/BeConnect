@@ -2,7 +2,7 @@
 import YellowButton from '@/components/Buttons/YellowButton'
 import StickerLogo from '@/components/StickerLogo'
 import theme from '@/theme'
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import Square from '@/components/Display/square'
@@ -27,7 +27,7 @@ const Home = () => {
           </Box>
           <Box sx={{ width: '30%' }}>
             <Box sx={{ display: 'flex', justifyContent: 'center', backgroundColor: theme.palette.background.white, padding: '20px', borderRadius: '0px 80px 0px 80px', width: '100%'}}>
-            <Image src="/interview.svg" alt="logo" width={750} height={250} />
+            <Image src="/interview.png" alt="interview" width={750} height={250} style={{ width: '100%', height: 'auto' }} />
             </Box>
           </Box>
         </Box>

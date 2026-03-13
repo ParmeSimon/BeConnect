@@ -28,9 +28,18 @@ const theme = createTheme({
       yellow: '#FED36D'
     }
   },
-  components: {},
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: '#FAFAFA',
+        },
+      },
+    },
+  },
   shape: {
     borderRadius: 8 // Valeur par défaut neutre
+    
   }
 })
 
