@@ -4,8 +4,7 @@ import { JWT } from 'next-auth/jwt'
 
 export interface ApiUser {
   id?: string
-  lastName?: string
-  firstName?: string
+  fullName?: string
   email?: string
   roles: string[]
   token?: string
@@ -16,13 +15,12 @@ declare module 'next-auth' {
   interface Session {
     user: ApiUser & DefaultSession['user']
   }
-  interface User extends ApiUser {}
+  interface User extends ApiUser { }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT {
-    firstName?: string
-    lastName?: string
+    fullName?: string
     email?: string
     roles: string[]
     token?: string
@@ -65,9 +63,8 @@ export const authenticate = async (
       const rem = lockTime % 60
       response.message = `${response['detail']}, retry after ${Math.floor(
         lockTime / 60
-      )}${
-        rem > 0 ? ':' + rem.toString().padStart(2, '0') : ''
-      } mn or contact an administrator.`
+      )}${rem > 0 ? ':' + rem.toString().padStart(2, '0') : ''
+        } mn or contact an administrator.`
     }
     throw response
   })
@@ -112,21 +109,19 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Mot de passe', type: 'password' }
       },
       async authorize(credentials): Promise<User | null> {
-        
+
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
-      
+
         try {
           const response = await authenticate(credentials.email, credentials.password);
-      
           if (response && response.token) {
             const jwtPayload = decodeJwtPayload(response.token)
             return {
               id: jwtPayload.username || credentials.email || 'user',
               email: jwtPayload.username || credentials.email || '',
-              firstName: response.user?.firstName || '',
-              lastName: response.user?.lastName || '',
+              fullName: jwtPayload.fullName || '',
               roles: jwtPayload.roles || [],
               token: response.token,
               refresh_token: response.refresh_token
@@ -147,8 +142,7 @@ export const authOptions: NextAuthOptions = {
       session?: any
     }): Promise<JWT> => {
       if (params.user) {
-        params.token.firstName = params.user.firstName
-        params.token.lastName = params.user.lastName
+        params.token.fullName = params.user.fullName
         params.token.email = params.user.email!
         params.token.roles = params.user.roles
         params.token.token = params.user.token
@@ -165,8 +159,7 @@ export const authOptions: NextAuthOptions = {
       session: Session
       token: JWT
     }): Promise<Session | DefaultSession> => {
-      params.token.firstName = params.token.firstName
-      params.token.lastName = params.token.lastName
+      params.session.user.fullName = params.token.fullName
       params.session.user.email = params.token.email
       params.session.user.roles = params.token.roles
       params.session.user.token = params.token.token

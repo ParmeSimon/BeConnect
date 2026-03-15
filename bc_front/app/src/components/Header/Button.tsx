@@ -31,11 +31,11 @@ export default function ButtonHeader({ label, link }: ButtonHeaderProps) {
                 border: `2px solid ${theme.palette.background.purple}`,
             },
         }}
-        onClick={() => {
-            if (link) {
-                router.push(link);
-            }
-        }}
+            onClick={() => {
+                if (link) {
+                    router.push(link);
+                }
+            }}
         >
             <Typography>{label}</Typography>
         </Button>

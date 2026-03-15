@@ -65,14 +65,14 @@ class Company
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'company')]
-    private Collection $user;
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'company')]
+    private Collection $users;
 
     public function __construct()
     {
         $this->place = new ArrayCollection();
         $this->image = new ArrayCollection();
-        $this->user = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -227,16 +227,16 @@ class Company
     /**
      * @return Collection<int, User>
      */
-    public function getUser(): Collection
+    public function getUsers(): Collection
     {
-        return $this->user;
+        return $this->users;
     }
 
     public function addUser(User $user): static
     {
-        if (!$this->user->contains($user)) {
-            $this->user->add($user);
-            $user->setCompany($this);
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->addCompany($this);
         }
 
         return $this;
@@ -244,11 +244,8 @@ class Company
 
     public function removeUser(User $user): static
     {
-        if ($this->user->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getCompany() === $this) {
-                $user->setCompany(null);
-            }
+        if ($this->users->removeElement($user)) {
+            $user->removeCompany($this);
         }
 
         return $this;

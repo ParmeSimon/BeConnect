@@ -11,27 +11,33 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[Get()]
 #[GetCollection()]
 #[Post()]
 #[Patch()]
 #[Delete()]
+#[ApiResource(normalizationContext: ['groups' => ['course:read']], denormalizationContext: ['groups' => ['course:write']])]
 #[ORM\Entity(repositoryClass: CourseRepository::class)]
 class Course
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['course:read', 'course:write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['course:read', 'course:write'])]
     private ?string $libelle = null;
 
     /**
      * @var Collection<int, Student>
      */
     #[ORM\OneToMany(targetEntity: Student::class, mappedBy: 'course')]
+    #[Groups(['course:read', 'course:write'])]
     private Collection $students;
 
     public function __construct()

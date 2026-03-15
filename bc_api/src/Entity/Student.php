@@ -12,12 +12,14 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\ApiResource;
 
 #[Get()]
 #[GetCollection()]
 #[Post()]
 #[Patch()]
 #[Delete()]
+#[ApiResource(normalizationContext: ['groups' => ['student:read']], denormalizationContext: ['groups' => ['student:write']])]
 #[ORM\Entity(repositoryClass: StudentRepository::class)]
 class Student
 {
@@ -57,9 +59,19 @@ class Student
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?User $user = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Contract $contract = null;
+
+    /**
+     * @var Collection<int, Apply>
+     */
+    #[ORM\OneToMany(targetEntity: Apply::class, mappedBy: 'student')]
+    private Collection $applies;
+
     public function __construct()
     {
         $this->experiences = new ArrayCollection();
+        $this->applies = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -189,6 +201,48 @@ class Student
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getContract(): ?Contract
+    {
+        return $this->contract;
+    }
+
+    public function setContract(?Contract $contract): static
+    {
+        $this->contract = $contract;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Apply>
+     */
+    public function getApplies(): Collection
+    {
+        return $this->applies;
+    }
+
+    public function addApply(Apply $apply): static
+    {
+        if (!$this->applies->contains($apply)) {
+            $this->applies->add($apply);
+            $apply->setStudent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApply(Apply $apply): static
+    {
+        if ($this->applies->removeElement($apply)) {
+            // set the owning side to null (unless already changed)
+            if ($apply->getStudent() === $this) {
+                $apply->setStudent(null);
+            }
+        }
 
         return $this;
     }

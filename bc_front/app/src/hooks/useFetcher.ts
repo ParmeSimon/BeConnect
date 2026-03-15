@@ -8,7 +8,9 @@ export type ApiFetch = (
 ) => Promise<Response>
 
 export const useFetcher = () => {
-  const { data: session, update } = useSession()
+  const { data: session, status, update } = useSession()
+
+  const isReady = status === 'authenticated'
 
   const apiFetch = async (
     endpoint: string,
@@ -18,11 +20,11 @@ export const useFetcher = () => {
     return fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
       method: method ?? 'GET',
       headers: {
-        Accept: 'application/json',
+        Accept: 'application/ld+json',
         'Content-Type':
           method === 'PATCH'
             ? 'application/merge-patch+json'
-            : 'application/json',
+            : 'application/ld+json',
         Authorization: `Bearer ${session?.user.token}`
       },
       body: payload ? JSON.stringify(payload) : undefined
@@ -42,11 +44,11 @@ export const useFetcher = () => {
             return fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
               method: method ?? 'GET',
               headers: {
-                Accept: 'application/json',
+                Accept: 'application/ld+json',
                 'Content-Type':
                   method === 'PATCH'
                     ? 'application/merge-patch+json'
-                    : 'application/json',
+                    : 'application/ld+json',
                 Authorization: `Bearer ${res.token}`
               },
               body: payload ? JSON.stringify(payload) : undefined
@@ -59,5 +61,5 @@ export const useFetcher = () => {
     })
   }
 
-  return { apiFetch }
+  return { apiFetch, isReady }
 }

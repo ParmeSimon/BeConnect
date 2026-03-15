@@ -13,6 +13,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[Get()]
 #[GetCollection()]
@@ -20,6 +22,7 @@ use ApiPlatform\Metadata\Post;
 #[Patch()]
 #[Delete()]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ApiResource(normalizationContext: ['groups' => ['user:read']], denormalizationContext: ['groups' => ['user:write']])]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -27,50 +30,61 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read', 'user:write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
     /**
-     * @var list<string> The user roles
+     * @var list<string> The user roles 
      */
     #[ORM\Column]
+    #[Groups(['user:read', 'user:write'])]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $fullName = null;
 
     #[ORM\Column]
+    #[Groups(['user:read', 'user:write'])]
     private ?int $failedAttemps = null;
 
     /**
      * @var Collection<int, Student>
      */
     #[ORM\OneToOne(targetEntity: Student::class, mappedBy: 'user')]
+    #[Groups(['user:read', 'user:write'])]
     private Collection $students;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $website = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $linkedin = null;
 
-    #[ORM\ManyToOne(inversedBy: 'user')]
-    private ?Company $company = null;
-
-    #[ORM\ManyToOne(inversedBy: 'user')]
-    private ?Administrator $administrator = null;
+    /**
+     * @var Collection<int, company>
+     */
+    #[ORM\ManyToMany(targetEntity: company::class, inversedBy: 'users')]
+    #[Groups(['user:read', 'user:write'])]
+    private Collection $company;
 
     public function __construct()
     {
         $this->students = new ArrayCollection();
+        $this->company = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -232,27 +246,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCompany(): ?Company
+    /**
+     * @return Collection<int, company>
+     */
+    public function getCompany(): Collection
     {
         return $this->company;
     }
 
-    public function setCompany(?Company $company): static
+    public function addCompany(company $company): static
     {
-        $this->company = $company;
+        if (!$this->company->contains($company)) {
+            $this->company->add($company);
+        }
 
         return $this;
     }
 
-    public function getAdministrator(): ?Administrator
+    public function removeCompany(company $company): static
     {
-        return $this->administrator;
-    }
-
-    public function setAdministrator(?Administrator $administrator): static
-    {
-        $this->administrator = $administrator;
+        $this->company->removeElement($company);
 
         return $this;
     }
+
 }
