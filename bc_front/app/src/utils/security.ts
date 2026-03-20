@@ -28,6 +28,30 @@ declare module 'next-auth/jwt' {
   }
 }
 
+export const verifyPassword = (password: string, checkPassword?: string) => {
+  const format = /[ `!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/;
+
+  const result = {
+    checked: password === checkPassword && password !== "",
+    size: password.length >= 8,
+    upperCase: /[A-Z]/.test(password),
+    lowerCase: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: format.test(password),
+    success: false,
+    message: ''
+  };
+
+  if (result.checked && result.size && result.upperCase && result.lowerCase && result.number && result.special) {
+    result.success = true;
+    result.message = 'Mot de passe valide';
+  } else {
+    result.message = 'Le mot de passe ne respecte pas les critères';
+  }
+
+  return result;
+};
+
 export const authenticate = async (
   email: string,
   password: string

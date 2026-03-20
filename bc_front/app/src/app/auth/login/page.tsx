@@ -8,17 +8,15 @@ import { FormControlLabel, Checkbox } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
+import { enqueueSnackbar } from 'notistack'
+
 export default function AuthPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [error, setError] = useState('')
-    const [success, setSuccess] = useState('')
     const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
-        setSuccess('');
 
         const res = await signIn('credentials', {
             email: email,
@@ -27,9 +25,9 @@ export default function AuthPage() {
         });
 
         if (res?.error) {
-            setError('Identifiants incorrects ou erreur serveur');
+            enqueueSnackbar('identifiant ou mot de passe incorrect', { variant: 'error' })
         } else {
-            setSuccess('Connexion réussie !');
+            enqueueSnackbar('Connexion réussie !', { variant: 'success' })
             window.location.href = '/';
         }
     }
@@ -47,7 +45,6 @@ export default function AuthPage() {
                     <Typography variant="body1">Retour</Typography>
                 </Box>
                 <Typography variant="h3" sx={{ marginBottom: '20px' }}>Connexion</Typography>
-                {error && <Alert severity="error" sx={{ width: '80%', mb: 2 }}>{error}</Alert>}
                 <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '80%' }}>
                     <TextField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                     <TextField label="Mot de passe" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />

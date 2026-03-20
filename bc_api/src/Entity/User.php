@@ -15,14 +15,17 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\ApiResource;
 use Symfony\Component\Serializer\Attribute\Groups;
-
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 #[Get()]
 #[GetCollection()]
 #[Post()]
 #[Patch()]
 #[Delete()]
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(normalizationContext: ['groups' => ['user:read']], denormalizationContext: ['groups' => ['user:write']])]
+#[ApiFilter(SearchFilter::class, properties: ['email' => 'exact'])]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -48,7 +51,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:write'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
@@ -59,12 +62,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read', 'user:write'])]
     private ?int $failedAttemps = null;
 
-    /**
-     * @var Collection<int, Student>
-     */
-    #[ORM\OneToOne(targetEntity: Student::class, mappedBy: 'user')]
+    #[ORM\OneToOne(targetEntity: Student::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     #[Groups(['user:read', 'user:write'])]
-    private Collection $students;
+    private ?Student $student = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['user:read', 'user:write'])]
@@ -75,15 +75,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $linkedin = null;
 
     /**
-     * @var Collection<int, company>
+     * @var Collection<int, Company>
      */
-    #[ORM\ManyToMany(targetEntity: company::class, inversedBy: 'users')]
+    #[ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'users')]
     #[Groups(['user:read', 'user:write'])]
     private Collection $company;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $confirmationToken = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     public function __construct()
     {
-        $this->students = new ArrayCollection();
         $this->company = new ArrayCollection();
     }
 
@@ -192,31 +200,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Student>
-     */
-    public function getStudents(): Collection
+    public function getStudent(): ?Student
     {
-        return $this->students;
+        return $this->student;
     }
 
-    public function addStudent(Student $student): static
+    public function setStudent(?Student $student): static
     {
-        if (!$this->students->contains($student)) {
-            $this->students->add($student);
+        $this->student = $student;
+
+        if ($student !== null && $student->getUser() !== $this) {
             $student->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeStudent(Student $student): static
-    {
-        if ($this->students->removeElement($student)) {
-            // set the owning side to null (unless already changed)
-            if ($student->getUser() === $this) {
-                $student->setUser(null);
-            }
         }
 
         return $this;
@@ -247,14 +241,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, company>
+     * @return Collection<int, Company>
      */
     public function getCompany(): Collection
     {
         return $this->company;
     }
 
-    public function addCompany(company $company): static
+    public function addCompany(Company $company): static
     {
         if (!$this->company->contains($company)) {
             $this->company->add($company);
@@ -263,11 +257,58 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeCompany(company $company): static
+    public function removeCompany(Company $company): static
     {
         $this->company->removeElement($company);
 
         return $this;
     }
 
+    public function getConfirmationToken(): ?string
+    {
+        return $this->confirmationToken;
+    }
+
+    public function setConfirmationToken(?string $confirmationToken): static
+    {
+        $this->confirmationToken = $confirmationToken;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+    #[ORM\PreUpdate]
+    public function updateUpdatedAt(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
 }

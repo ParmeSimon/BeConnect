@@ -1,3 +1,5 @@
+import { Student } from "./Student";
+
 export interface User {
     id?: number;
     email: string;
@@ -7,6 +9,10 @@ export interface User {
     failedAttemps: number;
     website?: string;
     linkedin?: string;
+    student?: Student;
+    confirmationToken?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export default User;

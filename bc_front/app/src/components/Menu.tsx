@@ -5,7 +5,7 @@ import { Box, Link } from "@mui/material"
 import { useSession } from "next-auth/react"
 import { usePathname } from "next/navigation"
 
-const Menu = ({ menuRoutes }: { menuRoutes: NavItem[] }) => {
+const Menu = ({ routes }: { routes: NavItem[] }) => {
     const { data: session } = useSession()
     const pathname = usePathname() || ''
     const menuItems = routes.filter(route => {

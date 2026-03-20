@@ -24,6 +24,14 @@ security:
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        account:
+            pattern: ^/account
+            stateless: true
+            security: false
+        mailer:
+            pattern: ^/api/send-email
+            stateless: true
+            security: false
         api:
             pattern: ^/api
             stateless: true
@@ -31,6 +39,8 @@ security:
 
     access_control:
         - { path: ^/authentication_token, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/account, roles: PUBLIC_ACCESS }
+        - { path: ^/api/send-email, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: PUBLIC_ACCESS }
 
 when@test:

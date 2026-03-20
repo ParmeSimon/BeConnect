@@ -30,7 +30,7 @@ export default withAuth(
     callbacks: {
       authorized: ({ req, token }) => {
         const path = req.nextUrl.pathname;
-        if (path === '/' || path.startsWith('/auth/')) return true;
+        if (path === '/' || path.startsWith('/auth/') || path.startsWith('/activate-account')) return true;
         return !!token;
       }
     }

@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[Get()]
 #[GetCollection()]
@@ -26,46 +27,58 @@ class Student
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['student:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'students')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['student:read', 'student:write', 'user:write'])]
     private ?Course $course = null;
 
     #[ORM\Column(type: Types::BLOB, nullable: true)]
+    #[Groups(['student:read'])]
     private mixed $logo = null;
 
     #[ORM\Column]
+    #[Groups(['student:read', 'student:write', 'user:write'])]
     private ?int $nbSponsorship = null;
 
     #[ORM\ManyToOne(inversedBy: 'students')]
+    #[Groups(['student:read'])]
     private ?Place $place = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['student:read'])]
     private ?int $mobility = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['student:read'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['student:read'])]
     private ?string $github = null;
 
     /**
      * @var Collection<int, Experience>
      */
     #[ORM\OneToMany(targetEntity: Experience::class, mappedBy: 'student')]
+    #[Groups(['student:read'])]
     private Collection $experiences;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'student', cascade: ['persist', 'remove'])]
+    #[Groups(['student:read', 'student:write'])]
     private ?User $user = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Groups(['student:read'])]
     private ?Contract $contract = null;
 
     /**
      * @var Collection<int, Apply>
      */
     #[ORM\OneToMany(targetEntity: Apply::class, mappedBy: 'student')]
+    #[Groups(['student:read'])]
     private Collection $applies;
 
     public function __construct()

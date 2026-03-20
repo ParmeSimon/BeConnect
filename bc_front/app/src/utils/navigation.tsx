@@ -47,18 +47,36 @@ export const routes: NavItem[] = [
     authorisedRoles: ['ROLE_ADMIN'],
     isHidden: false,
     icon: <AccountCircleOutlined />
-  }, {
-    label: 'cursus',
-    path: '/settings/cursus',
+  }
+]
+
+export const tablesRoutes: NavItem[] = [
+  {
+    label: 'Cursus',
+    path: '/settings/courses',
     authorisedRoles: ['ROLE_ADMIN'],
     isHidden: false,
     icon: <AccountCircleOutlined />
-  }, {
-    label: 'Secteur',
-    path: '/settings/sector',
+  },
+  {
+    label: 'compétences',
+    path: '/settings/skills',
+    authorisedRoles: ['ROLE_ADMIN'],
+    isHidden: false,
+    icon: <AccountCircleOutlined />
+  },
+  {
+    label: 'profil',
+    path: '/settings/profil-wanted',
+    authorisedRoles: ['ROLE_ADMIN'],
+    isHidden: false,
+    icon: <AccountCircleOutlined />
+  },
+  {
+    label: 'localisation',
+    path: '/settings/place',
     authorisedRoles: ['ROLE_ADMIN'],
     isHidden: false,
     icon: <AccountCircleOutlined />
   }
-
 ]

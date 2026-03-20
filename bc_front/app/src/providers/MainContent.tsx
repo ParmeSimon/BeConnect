@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react'
 import theme from '@/theme'
 import { routes } from '@/utils/navigation'
 import Menu from '@/components/Menu'
+import MenuSettings from '@/components/MenuSettings'
 export default function MainContent({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession()
 
@@ -26,9 +27,10 @@ export default function MainContent({ children }: { children: React.ReactNode })
       />}
       <Box sx={{ position: 'relative', zIndex: 1 }}>
         <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, justifyContent: 'center' }}>
-          <Menu menuRoutes={routes} />
+          <MenuSettings routes={routes} />
+          
+          {/* <Menu routes={routes} /> */}
         </Box>
-
         {children}
       </Box>
     </Box>

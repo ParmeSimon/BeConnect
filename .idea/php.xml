@@ -33,9 +33,56 @@
       <path value="$PROJECT_DIR$/bc_api/vendor/symfony/web-link" />
       <path value="$PROJECT_DIR$/bc_api/vendor/symfony/serializer" />
       <path value="$PROJECT_DIR$/bc_api/vendor/symfony/type-info" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/nikic/php-parser" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/filesystem" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/console" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/process" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/dependency-injection" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/config" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/cache" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/var-exporter" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/runtime" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/routing" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/dotenv" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/service-contracts" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/yaml" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/flex" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/maker-bundle" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/framework-bundle" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/cache-contracts" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/finder" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/doctrine/orm" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/doctrine/deprecations" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/doctrine/event-manager" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/doctrine/dbal" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/doctrine/persistence" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/doctrine/doctrine-migrations-bundle" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/doctrine/migrations" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/doctrine/instantiator" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/doctrine/doctrine-bundle" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/doctrine/collections" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/doctrine/lexer" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/doctrine/sql-formatter" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/doctrine-bridge" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/stopwatch" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/clock" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/security-csrf" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/password-hasher" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/security-bundle" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/security-core" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/symfony/security-http" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/psr/clock" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/nelmio/cors-bundle" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/lexik/jwt-authentication-bundle" />
+      <path value="$PROJECT_DIR$/bc_api/vendor/lcobucci/jwt" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2">
     <option name="suggestChangeDefaultLanguageLevel" value="false" />
+  </component>
+  <component name="PhpUnit">
+    <phpunit_settings>
+      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/bc_api/vendor/autoload.php" />
+    </phpunit_settings>
   </component>
 </project>
