@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[Get()]
 #[GetCollection()]
@@ -26,6 +27,8 @@ class Place
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['administrator:read', 'administrator:write'])]
+
     private ?string $libelle = null;
 
     private Collection $place;

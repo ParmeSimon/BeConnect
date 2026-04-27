@@ -62,6 +62,32 @@ class AccountController extends AbstractController
         return $response;
     }
 
+    #[Route('/account/change-password', name: 'account_change_password', methods: ['POST'])]
+    public function changePassword(
+        Request $request,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true);
+
+        $oldPassword = $data['oldPassword'] ?? null;
+        $newPassword = $data['newPassword'] ?? null;
+        $email = $data['email'] ?? null;
+
+        $user = $userRepository->findOneBy(['email' => $email]);
+
+        if (!$passwordHasher->isPasswordValid($user, $oldPassword)) {
+            return $this->json(['success' => false, 'message' => 'L\'ancien mot de passe est incorrect'], 400);
+        }
+
+        $user->setPassword($passwordHasher->hashPassword($user, $newPassword));
+
+        $entityManager->flush();
+
+        return $this->json(['success' => true, 'message' => 'Mot de passe mis à jour !']);
+    }
+
     #[Route('/account/verify-token', name: 'account_verify_token', methods: ['POST'])]
     public function verifyToken(Request $request, UserRepository $userRepository): JsonResponse
     {

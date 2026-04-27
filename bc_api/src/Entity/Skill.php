@@ -18,14 +18,14 @@ class Skill
     #[ORM\Column(length: 255)]
     private ?string $libelle = null;
 
-    #[ORM\Column]
-    private ?\DateTime $lastUpdateDate = null;
-
     /**
      * @var Collection<int, Offer>
      */
     #[ORM\ManyToMany(targetEntity: Offer::class, mappedBy: 'skill')]
     private Collection $offers;
+
+    #[ORM\ManyToOne(inversedBy: 'skills')]
+    private ?administrator $administrator = null;
 
     public function __construct()
     {
@@ -49,17 +49,6 @@ class Skill
         return $this;
     }
 
-    public function getLastUpdateDate(): ?\DateTime
-    {
-        return $this->lastUpdateDate;
-    }
-
-    public function setLastUpdateDate(\DateTime $lastUpdateDate): static
-    {
-        $this->lastUpdateDate = $lastUpdateDate;
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Offer>
@@ -84,6 +73,18 @@ class Skill
         if ($this->offers->removeElement($offer)) {
             $offer->removeSkill($this);
         }
+
+        return $this;
+    }
+
+    public function getadministrator(): ?administrator
+    {
+        return $this->administrator;
+    }
+
+    public function setadministrator(?administrator $administrator): static
+    {
+        $this->administrator = $administrator;
 
         return $this;
     }

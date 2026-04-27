@@ -8,7 +8,7 @@ import { Box } from '@mui/material'
 import Header from '@/components/Header/Header'
 import { NotificationProvider } from '@/providers/NotificationProvider'
 import MainContent from '@/providers/MainContent'
-
+import Footer from '@/components/Footer/Footer'
 export default async function RootLayout({
   children
 }: Readonly<{
@@ -23,12 +23,13 @@ export default async function RootLayout({
             <NextAuthProvider>
               <NotificationProvider>
                 <SWRProvider>
-                  <Box sx={{ display: 'flex' }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
                     <CssBaseline />
                     <Header />
                     <MainContent>
                       {children}
                     </MainContent>
+                    <Footer />
                   </Box>
                 </SWRProvider>
               </NotificationProvider>

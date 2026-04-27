@@ -1,6 +1,6 @@
 import theme from "@/theme";
 import { Button, Typography } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 interface ButtonHeaderProps {
     label: string;
@@ -9,10 +9,14 @@ interface ButtonHeaderProps {
 
 export default function ButtonHeader({ label, link }: ButtonHeaderProps) {
     const router = useRouter();
+    const pathname = usePathname();
+    const normalizePath = (path: string) => path.replace(/\/+$/, "") || "/";
+    const isCurrentPage = normalizePath(pathname) === normalizePath(link);
+
     return (
         <Button sx={{
-            backgroundColor: theme.palette.background.white,
-            color: theme.palette.background.black,
+            backgroundColor: isCurrentPage ? theme.palette.background.purple : theme.palette.background.white,
+            color: isCurrentPage ? theme.palette.background.white : theme.palette.background.black,
             border: `2px solid ${theme.palette.background.purple}`,
             borderRadius: '16px',
             paddingInline: '20px',

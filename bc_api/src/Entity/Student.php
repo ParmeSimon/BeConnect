@@ -30,13 +30,8 @@ class Student
     #[Groups(['student:read'])]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'students')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['student:read', 'student:write', 'user:write'])]
-    private ?Course $course = null;
-
     #[ORM\Column(type: Types::BLOB, nullable: true)]
-    #[Groups(['student:read'])]
+    #[Groups(['student:read', 'student:write'])]
     private mixed $logo = null;
 
     #[ORM\Column]
@@ -47,23 +42,26 @@ class Student
     #[Groups(['student:read'])]
     private ?Place $place = null;
 
+    #[ORM\ManyToOne(inversedBy: 'students')]
+    private ?Administrator $administrator = null;
+
     #[ORM\Column(nullable: true)]
-    #[Groups(['student:read'])]
+    #[Groups(['student:read', 'student:write'])]
     private ?int $mobility = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['student:read'])]
+    #[Groups(['student:read', 'student:write'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['student:read'])]
+    #[Groups(['student:read', 'student:write'])]
     private ?string $github = null;
 
     /**
      * @var Collection<int, Experience>
      */
     #[ORM\OneToMany(targetEntity: Experience::class, mappedBy: 'student')]
-    #[Groups(['student:read'])]
+    #[Groups(['student:read', 'student:write'])]
     private Collection $experiences;
 
     #[ORM\OneToOne(inversedBy: 'student', cascade: ['persist', 'remove'])]
@@ -71,37 +69,41 @@ class Student
     private ?User $user = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[Groups(['student:read'])]
+    #[Groups(['student:read', 'student:write'])]
     private ?Contract $contract = null;
 
     /**
      * @var Collection<int, Apply>
      */
     #[ORM\OneToMany(targetEntity: Apply::class, mappedBy: 'student')]
-    #[Groups(['student:read'])]
+    #[Groups(['student:read', 'student:write'])]
     private Collection $applies;
+
+    /**
+     * @var Collection<int, Course>
+     */
+    #[ORM\ManyToMany(targetEntity: Course::class, inversedBy: 'students')]
+    #[Groups(['student:read', 'student:write'])]
+    private Collection $course;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['student:read', 'student:write'])]
+    private ?string $linkedin = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['student:read', 'student:write'])]
+    private ?string $website = null;
 
     public function __construct()
     {
         $this->experiences = new ArrayCollection();
         $this->applies = new ArrayCollection();
+        $this->course = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getCourse(): ?Course
-    {
-        return $this->course;
-    }
-
-    public function setCourse(?Course $course): static
-    {
-        $this->course = $course;
-
-        return $this;
     }
 
     public function getLogo(): mixed
@@ -136,6 +138,18 @@ class Student
     public function setPlace(?Place $place): static
     {
         $this->place = $place;
+
+        return $this;
+    }
+
+    public function getAdministrator(): ?Administrator
+    {
+        return $this->administrator;
+    }
+
+    public function setAdministrator(?Administrator $administrator): static
+    {
+        $this->administrator = $administrator;
 
         return $this;
     }
@@ -260,4 +274,51 @@ class Student
         return $this;
     }
 
+    /**
+     * @return Collection<int, Course>
+     */
+    public function getCourse(): Collection
+    {
+        return $this->course;
+    }
+
+    public function addCourse(Course $course): static
+    {
+        if (!$this->course->contains($course)) {
+            $this->course->add($course);
+        }
+
+        return $this;
+    }
+
+    public function removeCourse(Course $course): static
+    {
+        $this->course->removeElement($course);
+
+        return $this;
+    }
+
+    public function getLinkedin(): ?string
+    {
+        return $this->linkedin;
+    }
+
+    public function setLinkedin(?string $linkedin): static
+    {
+        $this->linkedin = $linkedin;
+
+        return $this;
+    }
+
+    public function getWebsite(): ?string
+    {
+        return $this->website;
+    }
+
+    public function setWebsite(?string $website): static
+    {
+        $this->website = $website;
+
+        return $this;
+    }
 }

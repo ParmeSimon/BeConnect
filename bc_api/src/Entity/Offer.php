@@ -88,6 +88,16 @@ class Offer
     #[ORM\OneToMany(targetEntity: Apply::class, mappedBy: 'offer')]
     private Collection $applies;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'offers')]
+    #[ORM\JoinColumn(name: 'administrator_id', referencedColumnName: 'id', nullable: true)]
+    private ?Administrator $administrator = null;
+
+    #[ORM\Column]
+    private ?bool $isValidate = null;
+
     public function __construct()
     {
         $this->profileWanted = new ArrayCollection();
@@ -378,6 +388,42 @@ class Offer
                 $apply->setOffer(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getAdministrator(): ?Administrator
+    {
+        return $this->administrator;
+    }
+
+    public function setAdministrator(?Administrator $administrator): static
+    {
+        $this->administrator = $administrator;
+
+        return $this;
+    }
+
+    public function isValidate(): ?bool
+    {
+        return $this->isValidate;
+    }
+
+    public function setIsValidate(bool $isValidate): static
+    {
+        $this->isValidate = $isValidate;
 
         return $this;
     }

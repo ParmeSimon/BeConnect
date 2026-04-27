@@ -36,8 +36,7 @@ class Course
     /**
      * @var Collection<int, Student>
      */
-    #[ORM\OneToMany(targetEntity: Student::class, mappedBy: 'course')]
-    #[Groups(['course:read', 'course:write'])]
+    #[ORM\ManyToMany(targetEntity: Student::class, mappedBy: 'course')]
     private Collection $students;
 
     public function __construct()
@@ -74,7 +73,7 @@ class Course
     {
         if (!$this->students->contains($student)) {
             $this->students->add($student);
-            $student->setCourse($this);
+            $student->addCourse($this);
         }
 
         return $this;
@@ -83,10 +82,7 @@ class Course
     public function removeStudent(Student $student): static
     {
         if ($this->students->removeElement($student)) {
-            // set the owning side to null (unless already changed)
-            if ($student->getCourse() === $this) {
-                $student->setCourse(null);
-            }
+            $student->removeCourse($this);
         }
 
         return $this;

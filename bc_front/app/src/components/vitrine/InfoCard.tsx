@@ -11,8 +11,8 @@ const InfoCard = (props: InfoCardProps) => {
 
     return (
         <Box sx={{ 
-            minWidth : '15%',
-            width : '22%', 
+            minWidth : '25%',
+            width : '25%', 
             height: '150px', 
             backgroundColor: theme.palette.background.white, 
             borderRadius: '10px', 
@@ -21,6 +21,7 @@ const InfoCard = (props: InfoCardProps) => {
             flexDirection : 'column',
             justifyContent : 'center',
             alignItems : 'center',
+            textAlign : 'center',
             gap : 2
             }}>
             {props.icon}

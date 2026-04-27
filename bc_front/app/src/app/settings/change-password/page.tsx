@@ -6,21 +6,19 @@ import { useEffect, useState } from "react";
 import { verifyPassword } from "@/utils/security";
 import { useSession } from "next-auth/react";
 import { useFetcher } from "@/hooks/useFetcher";
-import User from "@/interfaces/User";
+import User from "@/interfaces/User.interface";
+import { useSnackbar } from "notistack";
 
 const ChangePasswordPage = () => {
     const { data: session } = useSession();
     const { apiFetch } = useFetcher();
-
+    const { enqueueSnackbar } = useSnackbar();
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [result, setResult] = useState<{ checked: boolean, size: boolean, upperCase: boolean, lowerCase: boolean, number: boolean, special: boolean, success: boolean, message: string }>({ checked: false, size: false, upperCase: false, lowerCase: false, number: false, special: false, success: false, message: '' });
     const [user, setUser] = useState<User>();
-    const [loading, setLoading] = useState(false);
-    const [valid, setValid] = useState(false);
-    const [userInfo, setUserInfo] = useState<{ email: string; fullName: string } | null>(null);
-    const [submitting, setSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>, fieldType: 'password' | 'confirmPassword') => {
         const value = e.target.value;
@@ -39,12 +37,23 @@ const ChangePasswordPage = () => {
         setResult(validation); 
     };
 
-    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setSubmitting(true);
+        setIsLoading(true);
         setResult(verifyPassword(newPassword, confirmNewPassword));
-
-        setSubmitting(false);
+        const payload = {
+            oldPassword : oldPassword,
+            newPassword : newPassword,
+            email : session?.user.email
+        }
+        const changeRequest = await apiFetch('/account/change-password','POST',payload)
+        const response = await changeRequest.json();
+        if(response.success) {
+            enqueueSnackbar(response.message, { variant: 'success' });
+        } else {
+            enqueueSnackbar(response.message, { variant: 'error' });
+        }
+        setIsLoading(false);
     }
 
     useEffect( () => {
@@ -85,7 +94,7 @@ const ChangePasswordPage = () => {
                     <TextField type="password" label="Mot de passe actuel" variant="outlined" onChange={(e) => setOldPassword(e.target.value)} value={oldPassword} sx={{marginBottom: '30px'}}/>
                     <TextField type="password" label="Nouveau mot de passe" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e, 'password')} value={newPassword} />
                     <TextField type="password" label="Confirmer le nouveau mot de passe" variant="outlined" onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e, 'confirmPassword')} value={confirmNewPassword} />
-                    <Button type="submit" variant="contained" sx={{color: theme.palette.background.white, backgroundColor: theme.palette.background.purple }}>Modifier</Button>
+                    <Button type="submit" variant="contained" sx={{color: theme.palette.background.white, backgroundColor: theme.palette.background.purple }} disabled={isLoading}>Modifier</Button>
                 </Box>
                 <Divider orientation="vertical" flexItem />
                 <Box sx={{display: 'flex', flexDirection: 'column', width:'50%'}}>

@@ -3,18 +3,20 @@ import theme from "@/theme";
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useFetcher } from "@/hooks/useFetcher";
-import { Course } from "@/interfaces/Course";
-import { User } from "@/interfaces/User";
+import { Course } from "@/interfaces/Course.interface";
+import { User } from "@/interfaces/User.interface";
 import { createStudentEmail } from "@/utils/email";
 import { enqueueSnackbar } from "notistack";
+import { useSession } from "next-auth/react";
 
 const AddStudentPage = () => {
-
+    const { data: session } = useSession();
     const { apiFetch, isReady } = useFetcher();
     const [courses, setCourses] = useState<Course[]>([]);
     const [selectedCourse, setSelectedCourse] = useState('0');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const [user, setUser] = useState<User>({
         email: '',
         roles: ['ROLE_STUDENT'],
@@ -22,6 +24,7 @@ const AddStudentPage = () => {
         password: '',
         failedAttemps: 0,
         confirmationToken: '',
+        administrator: undefined,
     });
 
     useEffect(() => {
@@ -44,14 +47,15 @@ const AddStudentPage = () => {
             failedAttemps: 0,
             confirmationToken: '',
             email: '',
-            roles: ['ROLE_STUDENT'],
+            roles: ['ROLE_STUDENT']
         } as User);
     }
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setIsLoading(true);
         const token = crypto.randomUUID();
-        const userPayload = { ...user, confirmationToken: token, password: token };
+        const userPayload = { ...user, confirmationToken: token, password: token, administrator: `/api/administrators/${session!.user.administrateur?.id}`};
 
         const resUser = await apiFetch('/api/users', 'POST', userPayload);
         const dataUser = await resUser.json();
@@ -62,8 +66,9 @@ const AddStudentPage = () => {
 
         const studentPayload = {
             user: dataUser['@id'],
-            course: `/api/courses/${selectedCourse}`,
+            course: [`/api/courses/${selectedCourse}`],
             nbSponsorship: 0,
+            administrator: `/api/administrators/${user.id}`,
         };
         await apiFetch('/api/students', 'POST', studentPayload);
 
@@ -78,7 +83,7 @@ const AddStudentPage = () => {
         )
         resetFields()
         enqueueSnackbar('Étudiant créé avec succès', { variant: 'success' })
-
+        setIsLoading(false);
     }
 
     const handleChangeCursus = (event: SelectChangeEvent<string>) => {
@@ -130,7 +135,7 @@ const AddStudentPage = () => {
                     ))}
                 </Select>
                 <TextField type="email" label="Adresse email" variant="outlined" onChange={(e) => handleChange('email', e.target.value)} sx={{width: '70%'}} value={user.email} />
-                <Button type="submit" variant="contained" sx={{width: '70%', color: theme.palette.background.white, backgroundColor: theme.palette.background.purple }}>Créer</Button>
+                <Button type="submit" variant="contained" sx={{width: '70%', color: theme.palette.background.white, backgroundColor: theme.palette.background.purple }} disabled={isLoading}>Créer</Button>
             </Box>
         </Box>
        

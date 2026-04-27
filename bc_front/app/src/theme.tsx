@@ -12,6 +12,7 @@ declare module '@mui/material/styles' {
     white: string
     black: string
     yellow: string
+    grey: string
   }
 }
 
@@ -25,7 +26,8 @@ const theme = createTheme({
       purple: '#9368B0',
       white: '#FFFFFF',
       black: '#000000',
-      yellow: '#FED36D'
+      yellow: '#FED36D',
+      grey: '#F2F2F2'
     }
   },
   components: {

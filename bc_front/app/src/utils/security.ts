@@ -1,12 +1,28 @@
 import { DefaultSession, NextAuthOptions, Session, User } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { JWT } from 'next-auth/jwt'
+import { Administrator } from '../interfaces/Administrator.interface'
+import { Student } from '../interfaces/Student.interface'
+import { Company } from '../interfaces/Company.interface'
 
+export enum HttpStatusCode {
+  OK = 200,
+  CREATED = 201,
+  NO_CONTENT = 204,
+  BAD_REQUEST = 400,
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
+  NOT_FOUND = 404,
+  INTERNAL_SERVER_ERROR = 500
+}
 export interface ApiUser {
   id?: string
   fullName?: string
   email?: string
   roles: string[]
+  administrator?: Administrator
+  student?: Student
+  company?: Company
   token?: string
   refresh_token?: string
 }
@@ -23,6 +39,8 @@ declare module 'next-auth/jwt' {
     fullName?: string
     email?: string
     roles: string[]
+    userId?: string | number | null
+    administratorId?: string | number | null
     token?: string
     refresh_token?: string
   }
@@ -70,7 +88,7 @@ export const authenticate = async (
       }
     }
   ).then(async res => {
-    let response = await res.json()
+    const response = await res.json()
     if (res.status === 200) {
       return response
     }
@@ -142,11 +160,17 @@ export const authOptions: NextAuthOptions = {
           const response = await authenticate(credentials.email, credentials.password);
           if (response && response.token) {
             const jwtPayload = decodeJwtPayload(response.token)
+            const userId =
+              jwtPayload.userId != null ? String(jwtPayload.userId) : undefined
+            console.log(jwtPayload);
             return {
-              id: jwtPayload.username || credentials.email || 'user',
+              id: userId ?? jwtPayload.username ?? credentials.email ?? 'user',
               email: jwtPayload.username || credentials.email || '',
               fullName: jwtPayload.fullName || '',
               roles: jwtPayload.roles || [],
+              administrator: jwtPayload.administrator || null,
+              student: jwtPayload.student || null,
+              company: jwtPayload.company || null,
               token: response.token,
               refresh_token: response.refresh_token
             }
@@ -169,6 +193,10 @@ export const authOptions: NextAuthOptions = {
         params.token.fullName = params.user.fullName
         params.token.email = params.user.email!
         params.token.roles = params.user.roles
+        params.token.userId = params.user.id
+        params.token.administrator = params.user.administrator
+        params.token.student = params.user.student
+        params.token.company = params.user.company
         params.token.token = params.user.token
         params.token.refresh_token = params.user.refresh_token
       }
@@ -186,6 +214,12 @@ export const authOptions: NextAuthOptions = {
       params.session.user.fullName = params.token.fullName
       params.session.user.email = params.token.email
       params.session.user.roles = params.token.roles
+      if (params.token.userId != null) {
+        params.session.user.id = String(params.token.userId)
+      }
+      params.session.user.administrator = params.token.administrator as Administrator | undefined
+      params.session.user.student = params.token.student as Student | undefined
+      params.session.user.company = params.token.company as Company | undefined
       params.session.user.token = params.token.token
       params.session.user.refresh_token = params.token.refresh_token
 

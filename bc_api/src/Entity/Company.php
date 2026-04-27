@@ -12,6 +12,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[Get()]
 #[GetCollection()]
@@ -19,60 +21,99 @@ use ApiPlatform\Metadata\Post;
 #[Patch()]
 #[Delete()]
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
+#[ApiResource(normalizationContext: ['groups' => ['company:read']], denormalizationContext: ['groups' => ['company:write']])]
 class Company
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['company:read', 'company:write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['company:read', 'company:write'])]
     private ?string $siret = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['company:read', 'company:write'])]
     private ?string $jobFunction = null;
 
     #[ORM\Column(type: Types::BLOB, nullable: true)]
+    #[Groups(['company:read', 'company:write'])]
     private mixed $logo = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read', 'company:write'])]
     private ?string $sector = null;
 
     /**
      * @var Collection<int, Place>
      */
     #[ORM\ManyToMany(targetEntity: Place::class, inversedBy: 'companies')]
+    #[Groups(['company:read', 'company:write'])]
     private Collection $place;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['company:read', 'company:write'])]
     private ?int $sizeCompany = null;
 
     #[ORM\Column]
+    #[Groups(['company:read', 'company:write'])]
     private ?bool $isSearch = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read', 'company:write'])]
     private ?string $instagram = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read', 'company:write'])]
     private ?string $description = null;
 
     /**
      * @var Collection<int, Image>
      */
     #[ORM\ManyToMany(targetEntity: Image::class, inversedBy: 'companies')]
+    #[Groups(['company:read', 'company:write'])]
     private Collection $image;
 
     /**
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'company')]
+    #[Groups(['company:read', 'company:write'])]
     private Collection $users;
+
+    /**
+     * @var Collection<int, administrator>
+     */
+    #[ORM\ManyToMany(targetEntity: administrator::class, inversedBy: 'companies')]
+    #[Groups(['company:read', 'company:write'])]
+    private Collection $administratorId;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['company:read', 'company:write'])]
+    private ?string $name = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read', 'company:write'])]
+    private ?string $website = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read', 'company:write'])]
+    private ?string $linkedin = null;
+
+    #[ORM\Column]
+    private ?bool $isValidate = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
 
     public function __construct()
     {
         $this->place = new ArrayCollection();
         $this->image = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->administratorId = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -94,12 +135,12 @@ class Company
 
     public function getFunction(): ?string
     {
-        return $this->function;
+        return $this->jobFunction;
     }
 
     public function setFunction(string $jobFunction): static
     {
-        $this->function = $jobFunction;
+        $this->jobFunction = $jobFunction;
 
         return $this;
     }
@@ -247,6 +288,90 @@ class Company
         if ($this->users->removeElement($user)) {
             $user->removeCompany($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, administrator>
+     */
+    public function getAdministratorId(): Collection
+    {
+        return $this->administratorId;
+    }
+
+    public function addAdministratorId(administrator $administratorId): static
+    {
+        if (!$this->administratorId->contains($administratorId)) {
+            $this->administratorId->add($administratorId);
+        }
+
+        return $this;
+    }
+
+    public function removeAdministratorId(administrator $administratorId): static
+    {
+        $this->administratorId->removeElement($administratorId);
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getWebsite(): ?string
+    {
+        return $this->website;
+    }
+
+    public function setWebsite(?string $website): static
+    {
+        $this->website = $website;
+
+        return $this;
+    }
+
+    public function getLinkedin(): ?string
+    {
+        return $this->linkedin;
+    }
+
+    public function setLinkedin(?string $linkedin): static
+    {
+        $this->linkedin = $linkedin;
+
+        return $this;
+    }
+
+    public function isValidate(): ?bool
+    {
+        return $this->isValidate;
+    }
+
+    public function setIsValidate(bool $isValidate): static
+    {
+        $this->isValidate = $isValidate;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }

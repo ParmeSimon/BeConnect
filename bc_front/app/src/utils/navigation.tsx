@@ -1,5 +1,10 @@
 import AccountCircleOutlined from '@mui/icons-material/AccountCircleOutlined'
 
+export const isAdmin = [{ label: "Dashboard", link: "/admin/dashboard" }, { label: "Offres", link: "/admin/offers" }, { label: "Étudiants", link: "/admin/students" }, { label: "Alumnis", link: "/admin/alumnis" }, { label: "Entreprises", link: "/admin/companies" }]
+export const isStudent = [{ label: "Profil", link: "/student/profile" }, { label: "Offres", link: "/student/offers" }, { label: "Étudiants", link: "/student/students" }, { label: "Ancien étudiants", link: "/student/alumnis" }, { label: "Entreprises", link: "/student/companies" }, { label: "Suivi", link: "/student/tracking" }]
+export const isCompany = [{ label: "Profil", link: "/company/profile" }, { label: "Offres", link: "/company/offers" }, { label: "Étudiants", link: "/company/students" }, { label: "Candidatures", link: "/company/applications" }]
+
+
 export type NavItem = {
   label: string
   path: string

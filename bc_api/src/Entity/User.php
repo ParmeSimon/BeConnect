@@ -37,7 +37,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'student:write', 'student:read'])]
     private ?string $email = null;
 
     /**
@@ -55,7 +55,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'student:write', 'student:read'])]
     private ?string $fullName = null;
 
     #[ORM\Column]
@@ -63,32 +63,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $failedAttemps = null;
 
     #[ORM\OneToOne(targetEntity: Student::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'student:write', 'student:read'])]
     private ?Student $student = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
-    private ?string $website = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
-    private ?string $linkedin = null;
 
     /**
      * @var Collection<int, Company>
      */
     #[ORM\ManyToMany(targetEntity: Company::class, inversedBy: 'users')]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'student:write', 'student:read'])]
     private Collection $company;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $confirmationToken = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['user:read', 'user:write', 'student:write', 'student:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['user:read', 'user:write', 'student:write', 'student:read'])]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'user')]
+    #[Groups(['user:read', 'user:write'])]
+    private ?Administrator $administrator = null;
+
 
     public function __construct()
     {
@@ -216,30 +215,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getWebsite(): ?string
-    {
-        return $this->website;
-    }
-
-    public function setWebsite(?string $website): static
-    {
-        $this->website = $website;
-
-        return $this;
-    }
-
-    public function getLinkedin(): ?string
-    {
-        return $this->linkedin;
-    }
-
-    public function setLinkedin(?string $linkedin): static
-    {
-        $this->linkedin = $linkedin;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Company>
      */
@@ -311,4 +286,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }
+
+    public function getAdministrator(): ?Administrator
+    {
+        return $this->administrator;
+    }
+
+    public function setAdministrator(?Administrator $administrator): static
+    {
+        $this->administrator = $administrator;
+
+        return $this;
+    }
+
 }

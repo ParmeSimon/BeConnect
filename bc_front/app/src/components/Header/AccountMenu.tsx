@@ -13,11 +13,13 @@ import Logout from '@mui/icons-material/Logout';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import MessageIcon from '@mui/icons-material/Message';
+import EditProfil from '../EditProfil';
 export default function AccountMenu() {
     const session = useSession();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const router = useRouter();
     const open = Boolean(anchorEl);
+    const [openModal, setOpenModal] = React.useState(false);
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -26,11 +28,19 @@ export default function AccountMenu() {
         setAnchorEl(null);
     };
 
+    const handleEditProfil = () => {
+        setOpenModal(true);
+    };
 
     const handleSettings = () => {
         router.push('/settings/notifications');
     };
+    const nameParts = session.data?.user?.fullName?.trim().split(/\s+/) || [];    
+    const value = nameParts.length >= 2 
+    ? (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase()
+    : (nameParts[0]?.charAt(0) || "?").toUpperCase();
     return (
+        <>
         <React.Fragment>
             <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
                 <Tooltip title="Account settings">
@@ -42,7 +52,7 @@ export default function AccountMenu() {
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
                     >
-                        <Avatar sx={{ width: 45, height: 45 }}>M</Avatar>
+                        <Avatar sx={{ width: 45, height: 45 }}>{value}</Avatar>
                     </IconButton>
                 </Tooltip>
             </Box>
@@ -83,35 +93,37 @@ export default function AccountMenu() {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <MenuItem onClick={handleClose}>
-                    <Avatar /> {session.data?.user?.fullName}
+                <MenuItem onClick={handleEditProfil}>
+                    <Avatar sx={{ width: 20, height: 20 }}>{value}</Avatar> {session.data?.user?.fullName}
                 </MenuItem>
                 <Divider />
                 <MenuItem>
                     <ListItemIcon>
-                        <MessageIcon fontSize="small" />
+                        <MessageIcon fontSize="small" color='info'/>
                     </ListItemIcon>
                     messagerie
                 </MenuItem>
                 <MenuItem>
                     <ListItemIcon>
-                        <NotificationsIcon fontSize="small" />
+                        <NotificationsIcon fontSize="small" sx={{ color: '#F0E50E' }}/>
                     </ListItemIcon>
                     Notifications
                 </MenuItem>
                 <MenuItem onClick={() => handleSettings()}>
                     <ListItemIcon>
-                        <Settings fontSize="small" />
+                        <Settings fontSize="small"sx={{ color: 'black' }}/>
                     </ListItemIcon>
                     paramètres
                 </MenuItem>
                 <MenuItem onClick={() => signOut()}>
                     <ListItemIcon>
-                        <Logout fontSize="small" />
+                        <Logout fontSize="small" color='error'/>
                     </ListItemIcon>
                     Se déconnecter
                 </MenuItem>
             </Menu>
         </React.Fragment>
+    <EditProfil open={openModal} onClose={() => setOpenModal(false)} />
+   </>
     );
 }

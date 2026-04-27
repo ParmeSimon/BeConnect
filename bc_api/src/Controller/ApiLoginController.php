@@ -20,9 +20,14 @@ class ApiLoginController extends AbstractController
         }
 
         return $this->json([
-            'user' => $user->getId(),
-            'email' => $user->getEmail(),
-            'roles' => $user->getRoles(),
+            'user' => [
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'fullName' => $user->getFullName(),
+                'roles' => $user->getRoles(),
+                'administratorId' => $user->getAdministrator()?->getId(),
+                'studentId' => $user->getStudent()?->getId(),
+            ]
         ]);
     }
 }
