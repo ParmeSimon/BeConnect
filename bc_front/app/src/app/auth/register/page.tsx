@@ -8,6 +8,7 @@ import { FormControlLabel, Checkbox } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useRouter } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
+import { getNaf2008N5Label } from '@/constants/naf2008-n5'
 export default function RegisterPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -31,8 +32,8 @@ export default function RegisterPage() {
         });
         if (response.status === 200) {
             const data = await response.json();
-            console.log("Entreprise trouvée :", data.etablissement.uniteLegale.denominationUniteLegale);
-            return data.etablissement.uniteLegale.denominationUniteLegale;
+            console.log(data.etablissement.uniteLegale.denominationUniteLegale, getNaf2008N5Label(data.etablissement.uniteLegale.activitePrincipaleUniteLegale));
+            return true;
         } else if (response.status === 404) {
             console.error("SIRET inconnu");
             return false;
